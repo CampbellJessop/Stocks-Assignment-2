@@ -51,13 +51,9 @@ ui <- fluidPage(
        choices = c("open","volume"),
        selected = "open"
      ),
-     sliderTextInput(
-       inputId = "Date",
-       label = "Choose a Date Range:", 
-       choices = Year_Range,
-       selected = Year_Range[c(1, 2)]
-     )
-    ),
+     dateInput("Start", label = h3("Starting Date"), value = "2010-01-01"),
+     dateInput("End", label = h3("Ending Date"), value = "2017-01-01")
+     ),
     # Show a plot of the generated distribution
     mainPanel(
       plotOutput("timePlot")
@@ -74,7 +70,7 @@ server <- function(input, output) {
     stocks %>%  
       filter(symbol %in% selected_stocks) %>%
       select(symbol,input$yvar) %>% 
-      autoplot() + scale_x_date(limits = as.Date(c(input$Date[1],input$Date[2])))
+      autoplot() + scale_x_date(limits = as.Date(c(input$Start,input$End)))
 
     
   })
