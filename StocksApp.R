@@ -5,11 +5,11 @@ library(shiny)
 #shinyWidgetsGallery()
 
 # Read zipped data
-# stocks <- read_csv("nyse_stocks.csv.zip")
+stocks <- read_csv("nyse_stocks.csv.zip")
 
 # Convert to `tsibble()`
-# stocks$date <- as.Date(stocks$date)
-# stocks <- tsibble(stocks, index = date, key = symbol)
+stocks$date <- as.Date(stocks$date)
+stocks <- tsibble(stocks, index = date, key = symbol)
 
 # 1 stock
 selected_stock <- "AAPL"
@@ -26,7 +26,8 @@ stocks %>%
   filter(symbol %in% selected_stocks) %>%
   autoplot(open)
 
-
+#Create Year Range Vector
+Year_Range <- c("2010/1/1","2011/1/1","2012/1/1","2013/1/1","2014/1/1","2015/1/1","2016/1/1","2017/1/1")
 
 ?awesomeRadio()
 
@@ -49,6 +50,12 @@ ui <- fluidPage(
        label = "Select a variable to study:", 
        choices = c("open","volume"),
        selected = "open"
+     ),
+     sliderTextInput(
+       inputId = "Date",
+       label = "Choose a Date Range:", 
+       choices = Year_Range,
+       selected = Year_Range[c(1, 2)]
      )
     ),
     # Show a plot of the generated distribution
@@ -64,10 +71,10 @@ server <- function(input, output) {
   output$timePlot <- renderPlot({
     # draw the time plot with selected symbols and y var
     selected_stocks <- input$stockselect
-    stocks %>%
+    stocks %>%  
       filter(symbol %in% selected_stocks) %>%
       select(symbol,input$yvar) %>% 
-      autoplot()
+      autoplot() + scale_x_date(limits = as.Date(c(input$Date[1],input$Date[2])))
 
     
   })
