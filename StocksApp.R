@@ -26,9 +26,6 @@ stocks %>%
   filter(symbol %in% selected_stocks) %>%
   autoplot(open)
 
-#Create Year Range Vector
-Year_Range <- c("2010/1/1","2011/1/1","2012/1/1","2013/1/1","2014/1/1","2015/1/1","2016/1/1","2017/1/1")
-
 ?awesomeRadio()
 
 
