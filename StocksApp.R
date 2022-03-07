@@ -1,33 +1,59 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
+library(fpp3)
+library(readr)
+library(shinyWidgets)
 library(shiny)
+#shinyWidgetsGallery()
+
+# Read zipped data
+# stocks <- read_csv("nyse_stocks.csv.zip")
+
+# Convert to `tsibble()`
+# stocks$date <- as.Date(stocks$date)
+# stocks <- tsibble(stocks, index = date, key = symbol)
+
+# 1 stock
+selected_stock <- "AAPL"
+
+stocks %>%
+  filter(symbol == selected_stock) %>%
+  autoplot(open) +
+  labs(title = selected_stock)
+
+# Multiple stocks
+selected_stocks <- c("GOOG", "AAPL")
+
+stocks %>%
+  filter(symbol %in% selected_stocks) %>%
+  autoplot(open)
+
+
+
+?awesomeRadio()
+
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
   
   # Application title
-  titlePanel("Old Faithful Geyser Data"),
+  titlePanel("Group Assignment 2 - Stocks!"),
   
   # Sidebar with a slider input for number of bins 
   sidebarLayout(
     sidebarPanel(
-      sliderInput("bins",
-                  "Number of bins:",
-                  min = 1,
-                  max = 50,
-                  value = 30)
+     selectizeInput(inputId="stockselect",
+                     label="Select some stocks!",
+                     choices=unique(stocks$symbol),
+                     multiple=TRUE),
+     awesomeRadio(
+       inputId = "yvar",
+       label = "Select a variable to study:", 
+       choices = c("open","volume"),
+       selected = "open"
+     )
     ),
-    
     # Show a plot of the generated distribution
     mainPanel(
-      plotOutput("distPlot")
+      plotOutput("timePlot")
     )
   )
 )
@@ -35,13 +61,15 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
-  output$distPlot <- renderPlot({
-    # generate bins based on input$bins from ui.R
-    x    <- faithful[, 2]
-    bins <- seq(min(x), max(x), length.out = input$bins + 1)
+  output$timePlot <- renderPlot({
+    # draw the time plot with selected symbols and y var
+    selected_stocks <- input$stockselect
+    stocks %>%
+      filter(symbol %in% selected_stocks) %>%
+      select(symbol,input$yvar) %>% 
+      autoplot()
+
     
-    # draw the histogram with the specified number of bins
-    hist(x, breaks = bins, col = 'darkgray', border = 'white')
   })
 }
 
