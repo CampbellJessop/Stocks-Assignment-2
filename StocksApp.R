@@ -50,16 +50,21 @@ ui <- fluidPage(
      ),
      dateInput("Start", label = h3("Starting Date"), value = "2010-01-01"),
      dateInput("End", label = h3("Ending Date"), value = "2017-01-01")
+    
      ),
+    
     # Show a plot of the generated distribution
     mainPanel(
-      plotOutput("timePlot")
+      plotOutput("timePlot"),
+      #Show summary of plot
+      verbatimTextOutput("summary")
     )
   )
 )
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
+  
   
   output$timePlot <- renderPlot({
     # draw the time plot with selected symbols and y var
@@ -68,10 +73,20 @@ server <- function(input, output) {
       filter(symbol %in% selected_stocks) %>%
       select(symbol,input$yvar) %>% 
       autoplot() + scale_x_date(limits = as.Date(c(input$Start,input$End)))
+    
 
     
   })
-}
+  # Summary output of selected stocks per date range 
+  output$summary<-renderPrint({
+    selected_stocks <- input$stockselect
+    stockss<-as.data.frame(stocks)
+x<-subset(stockss,subset=symbol%in%selected_stocks& date>as.Date(input$Start)&date<as.Date(input$End),select = c(symbol,open,volume))
+   tapply(x[,input$yvar],x$symbol,summary)
+    
+    
+    
+  })}
 
 # Run the application 
 shinyApp(ui = ui, server = server)
