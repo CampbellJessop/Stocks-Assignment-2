@@ -43,7 +43,7 @@ body <- dashboardBody(
     
     box(
       title = "Stock Text Output",
-      status = "warning",
+      status = "primary",
       solidHeader = TRUE,
       collapsible = TRUE,
       verbatimTextOutput("summary")
@@ -107,7 +107,7 @@ body <- dashboardBody(
   fluidRow(
     box(
       title = "Select Stocks",
-      status = "info",
+      status = "warning",
       solidHeader = TRUE,
       width = 4,
       selectizeInput(inputId="selected",
@@ -117,7 +117,7 @@ body <- dashboardBody(
     ),
     box(
       title = "Stock Variable",
-      status = "primary",
+      status = "warning",
       solidHeader = TRUE,
       width = 2,
       awesomeRadio(
@@ -129,7 +129,7 @@ body <- dashboardBody(
     ),
     box(
      title="Shares" ,
-     status= "primary",
+     status= "warning",
      solidHeader = TRUE,
      width = 2,
      numericInput(inputId = "shares",
@@ -138,7 +138,7 @@ body <- dashboardBody(
     ),
     box(
       title = "Investment Scenario Profit (Opening Prices)",
-      status = "success",
+      status = "warning",
       solidHeader = TRUE,
       width = 4,
       collapsible = TRUE,
