@@ -53,7 +53,7 @@ body <- dashboardBody(
   
   fluidRow(
     box(
-      title = "Input #1",
+      title = "Select Stocks",
       status = "info",
       solidHeader = TRUE,
       width = 4,
@@ -63,7 +63,7 @@ body <- dashboardBody(
                      multiple=TRUE)
     ),
     box(
-      title = "Input #2",
+      title = "Stock Variable",
       status = "success",
       solidHeader = TRUE,
       width = 4,
@@ -75,7 +75,7 @@ body <- dashboardBody(
       )
     ),
     box(
-      title = "Input #3", 
+      title = "Time Interval", 
       status = "danger",
       solidHeader = TRUE,
       width = 4,
@@ -103,8 +103,49 @@ body <- dashboardBody(
       solidHeader = TRUE,
       "Stock information ranges from 1/4/2010 - 12/30/2016"
     )
-  )
-)
+  ),
+  fluidRow(
+    box(
+      title = "Select Stocks",
+      status = "info",
+      solidHeader = TRUE,
+      width = 4,
+      selectizeInput(inputId="selected",
+                     label="Select a stock:",
+                     choices=unique(stocks$symbol),
+                     multiple=FALSE)
+    ),
+    box(
+      title = "Stock Variable",
+      status = "primary",
+      solidHeader = TRUE,
+      width = 2,
+      awesomeRadio(
+        inputId = "vars",
+        label = "Select a variable to study:", 
+        choices = c("open","close"),
+        selected = "open"
+      )
+    ),
+    box(
+     title="Shares" ,
+     status= "primary",
+     solidHeader = TRUE,
+     width = 2,
+     numericInput(inputId = "shares",
+                  label="How many shares?",
+                    value = 1)
+    ),
+    box(
+      title = "Investment Scenario Profit (Opening Prices)",
+      status = "success",
+      solidHeader = TRUE,
+      width = 4,
+      collapsible = TRUE,
+      verbatimTextOutput("calculated")
+      
+    )
+))
 
 # Define UI for application that draws a histogram
 ui <- dashboardPage(
@@ -129,7 +170,15 @@ server <- function(input, output) {
     stockss<-as.data.frame(stocks)
     x<-subset(stockss,subset=symbol%in%selected_stocks& date>as.Date(input$Start)&date<as.Date(input$End),select = c(symbol,open,volume))
     tapply(x[,input$yvar],x$symbol,summary)
-  })}
+  })
+  #What if investment scenario
+  output$calculated<-renderPrint({ 
+  selecteds <- input$selected
+  stocksss<-as.data.frame(stocks)
+  x2<-subset(stocksss,subset=symbol==selecteds& date>as.Date(input$Start)&date<as.Date(input$End),select = c(symbol,open,close))
+ (tail(x2[,input$vars],1)*input$shares)-(head(x2[,input$vars],1)*input$shares) } )
+  
+  }
 
 
 # Preview the UI in the console
